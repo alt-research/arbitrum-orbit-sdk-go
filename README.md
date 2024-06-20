@@ -8,9 +8,9 @@
 
 ## Setup Bridge
 
-## Rollup Management (invoke rollup contracts on parent chain)
+## Interact with rollup contracts 
 
-## Orbit Chain Management(invoke arbos)
+## Intereact with arbos
 
 ## Cross Chain Transactions
 
