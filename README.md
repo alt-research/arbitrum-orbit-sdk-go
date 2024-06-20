@@ -58,7 +58,7 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.
 
 ## Bridge Setup
 
-## Interact with Rollup contracs (on parent chain)
+## Interact with Rollup contracts (on parent chain)
 
 ## Interact  with Arbos (on orbit chain)
 
