@@ -19,8 +19,10 @@ type RollupCreator struct {
 	RPC                     string
 	Address                 string
 	PrivateKey              string
+	Client                  *ethclient.Client
 	opts                    *bind.TransactOpts
 	RollupCreatorTransactor *bindings.RollupCreatorTransactor
+	RollupCreator           *bindings.RollupCreator
 }
 
 func NewRollupCreator(chainIndex int, privateKey string, l1conn string, address string) (*RollupCreator, error) {
@@ -72,6 +74,7 @@ func NewRollupCreator(chainIndex int, privateKey string, l1conn string, address 
 	return &RollupCreator{
 		RPC:                     l1conn,
 		Address:                 address,
+		Client:                  client,
 		opts:                    auth,
 		RollupCreatorTransactor: (*bindings.RollupCreatorTransactor)(rollupCreatorTransactor),
 	}, nil
@@ -111,4 +114,16 @@ func (r *RollupCreator) CreateRollupWithNativeEther(
 	deploymentParams.DeployFactoriesToL2 = true
 	deploymentParams.MaxFeePerGasForRetryables = types.DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
 	return r.RollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
+}
+
+func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
+	receipt, err := r.Client.TransactionReceipt(ctx, txn.Hash())
+	if err != nil {
+		return nil, err
+	}
+	rollupCreatorRollupCreated, err := r.RollupCreator.ParseRollupCreated(*receipt.Logs[len(receipt.Logs)-1])
+	if err != nil {
+		return nil, err
+	}
+	return rollupCreatorRollupCreated, nil
 }
