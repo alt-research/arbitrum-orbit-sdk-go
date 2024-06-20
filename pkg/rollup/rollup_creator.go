@@ -103,7 +103,6 @@ func (r *RollupCreator) CreateRollupWithNativeEther(
 	config.Owner = owner
 	config.LoserStakeEscrow = loserStakeEscrow
 	config.ChainConfig = chainConfig
-	config.ChainConfig = chainConfig
 	config.GenesisBlockNum = genesisBlockNum
 	config.SequencerInboxMaxTimeVariation = types.DefaultSequencerInboxMaxTimeVariation
 
