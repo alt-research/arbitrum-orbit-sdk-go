@@ -28,6 +28,7 @@ func WaitTx(ctx context.Context, client *ethclient.Client, txn *ethtypes.Transac
 			if safeBlock.NumberU64() < receipt.BlockNumber.Uint64() {
 				log.Info("parent chain: waiting for safe block (see wait-for-tx-approval-safe-poll)", "waiting", receipt.BlockNumber.Uint64(), "safe", safeBlock.NumberU64())
 				time.Sleep(time.Second * 50)
+				continue
 			}
 		}
 	}
