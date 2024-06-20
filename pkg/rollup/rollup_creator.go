@@ -17,7 +17,7 @@ import (
 
 type RollupCreator struct {
 	RPC                     string
-	Address                 string
+	Address                 common.Address
 	PrivateKey              string
 	Client                  *ethclient.Client
 	opts                    *bind.TransactOpts
@@ -25,7 +25,7 @@ type RollupCreator struct {
 	RollupCreator           *bindings.RollupCreator
 }
 
-func NewRollupCreator(chainIndex int, privateKey string, l1conn string, address string) (*RollupCreator, error) {
+func NewRollupCreator(chainIndex int, privateKey string, l1conn string) (*RollupCreator, error) {
 	key, err := crypto.HexToECDSA(privateKey)
 	if err != nil {
 		return nil, err
@@ -67,13 +67,15 @@ func NewRollupCreator(chainIndex int, privateKey string, l1conn string, address 
 	auth.GasLimit = uint64(300000) // in units
 	auth.GasPrice = gasPrice
 
-	rollupCreatorTransactor, err := bindings.NewRollupCreatorCaller(common.HexToAddress(types.RollupCreatorAddr[chainIndex]), client)
+	rollupCreatorAddr := common.HexToAddress(types.RollupCreatorAddr[chainIndex])
+
+	rollupCreatorTransactor, err := bindings.NewRollupCreatorCaller(rollupCreatorAddr, client)
 	if err != nil {
 		return nil, err
 	}
 	return &RollupCreator{
 		RPC:                     l1conn,
-		Address:                 address,
+		Address:                 rollupCreatorAddr,
 		Client:                  client,
 		opts:                    auth,
 		RollupCreatorTransactor: (*bindings.RollupCreatorTransactor)(rollupCreatorTransactor),
