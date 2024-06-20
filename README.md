@@ -28,7 +28,7 @@ go get github.com/renlulu/arbitrum-orbit-sdk-go
 1. Create `RollupCreator`
 
 ```go
-func NewRollupCreator(chainIndex int, privateKey string, l1conn string) (*RollupCreator, error)
+func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error)
 ```
 
 2. Create Rollup using $ETH as gas token
@@ -36,6 +36,7 @@ func NewRollupCreator(chainIndex int, privateKey string, l1conn string) (*Rollup
 ```go
 func (r *RollupCreator) CreateRollup(
 	ctx context.Context,
+    chainIndex int,
 	owner common.Address,
 	chainId *big.Int,
 	chainConfig string,

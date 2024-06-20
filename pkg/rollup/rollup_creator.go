@@ -16,16 +16,14 @@ import (
 )
 
 type RollupCreator struct {
-	RPC                     string
-	Address                 common.Address
-	PrivateKey              string
-	Client                  *ethclient.Client
-	opts                    *bind.TransactOpts
-	RollupCreatorTransactor *bindings.RollupCreatorTransactor
-	RollupCreator           *bindings.RollupCreator
+	RPC           string
+	PrivateKey    string
+	Client        *ethclient.Client
+	opts          *bind.TransactOpts
+	RollupCreator *bindings.RollupCreator
 }
 
-func NewRollupCreator(chainIndex int, privateKey string, l1conn string) (*RollupCreator, error) {
+func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error) {
 	key, err := crypto.HexToECDSA(privateKey)
 	if err != nil {
 		return nil, err
@@ -67,23 +65,20 @@ func NewRollupCreator(chainIndex int, privateKey string, l1conn string) (*Rollup
 	auth.GasLimit = uint64(300000) // in units
 	auth.GasPrice = gasPrice
 
-	rollupCreatorAddr := common.HexToAddress(types.RollupCreatorAddr[chainIndex])
-
-	rollupCreatorTransactor, err := bindings.NewRollupCreatorCaller(rollupCreatorAddr, client)
+	// rollupCreatorTransactor, err := bindings.NewRollupCreatorCaller(rollupCreatorAddr, client)
 	if err != nil {
 		return nil, err
 	}
 	return &RollupCreator{
-		RPC:                     l1conn,
-		Address:                 rollupCreatorAddr,
-		Client:                  client,
-		opts:                    auth,
-		RollupCreatorTransactor: (*bindings.RollupCreatorTransactor)(rollupCreatorTransactor),
+		RPC:    l1conn,
+		Client: client,
+		opts:   auth,
 	}, nil
 }
 
 func (r *RollupCreator) CreateRollup(
 	ctx context.Context,
+	chainIndex int,
 	owner common.Address,
 	chainId *big.Int,
 	chainConfig string,
@@ -114,7 +109,12 @@ func (r *RollupCreator) CreateRollup(
 	deploymentParams.NativeToken = types.DefaultRollupCreatorRollupDeploymentParams.NativeToken
 	deploymentParams.DeployFactoriesToL2 = true
 	deploymentParams.MaxFeePerGasForRetryables = types.DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
-	return r.RollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
+	rollupCreatorAddr := types.RollupCreatorAddr[chainIndex]
+	rollupCreatorTransactor, err := bindings.NewRollupCreatorTransactor(common.HexToAddress(rollupCreatorAddr), r.Client)
+	if err != nil {
+		return nil, err
+	}
+	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
 
 func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
