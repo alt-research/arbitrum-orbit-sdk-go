@@ -82,7 +82,7 @@ func NewRollupCreator(chainIndex int, privateKey string, l1conn string) (*Rollup
 	}, nil
 }
 
-func (r *RollupCreator) CreateRollupWithNativeEther(
+func (r *RollupCreator) CreateRollup(
 	ctx context.Context,
 	owner common.Address,
 	chainId *big.Int,
