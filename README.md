@@ -56,8 +56,11 @@ func (r *RollupCreator) CreateRollup(
 func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error)
 ```
 
-
 ## Bridge Setup
+
+## Interact with Rollup contracs (on parent chain)
+
+## Interact  with Arbos (on orbit chain)
 
 ## Cross Chain Transactions
 
