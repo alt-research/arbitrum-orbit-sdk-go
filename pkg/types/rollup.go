@@ -1,13 +1,10 @@
 package types
 
 import (
-	"context"
 	"encoding/hex"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
 )
 
@@ -22,6 +19,17 @@ const (
 	arbitrumSepolia = "0x06E341073b2749e0Bb9912461351f716DeCDa9b0"
 	baseSepolia     = "0x1E0921818df948c338380e722C8aE91Bb285763C"
 )
+
+var RollupCreatorAddr = [8]string{
+	ethereum,
+	arbitrumOne,
+	arbitrumNova,
+	base,
+	sepolia,
+	holesky,
+	arbitrumSepolia,
+	base,
+}
 
 var (
 	DefaultBaseStake                      = big.NewInt(100000000000000000)
@@ -47,54 +55,3 @@ var (
 		MaxFeePerGasForRetryables: big.NewInt(100000000),
 	}
 )
-
-type RollupCreator struct {
-	RPC                     string
-	Address                 string
-	opts                    *bind.TransactOpts
-	RollupCreatorTransactor *bindings.RollupCreatorTransactor
-}
-
-func NewRollupCreator(rpc string, address string, opts *bind.TransactOpts) *RollupCreator {
-	return &RollupCreator{
-		RPC:     rpc,
-		Address: address,
-		opts:    opts,
-	}
-}
-
-func (r *RollupCreator) CreateRollupWithNativeEther(
-	ctx context.Context,
-	owner common.Address,
-	chainId *big.Int,
-	chainConfig string,
-	genesisBlockNum uint64,
-	loserStakeEscrow common.Address,
-	wasmModuleRoot [32]byte,
-	batchPoster common.Address,
-	validators []common.Address,
-
-) (*ethtypes.Transaction, error) {
-	var config bindings.Config
-	config.ConfirmPeriodBlocks = DefaultConfig.ConfirmPeriodBlocks
-	config.ExtraChallengeTimeBlocks = DefaultConfig.ExtraChallengeTimeBlocks
-	config.StakeToken = DefaultConfig.StakeToken
-	config.BaseStake = DefaultConfig.BaseStake
-	config.WasmModuleRoot = wasmModuleRoot
-	config.Owner = owner
-	config.LoserStakeEscrow = loserStakeEscrow
-	config.ChainConfig = chainConfig
-	config.ChainConfig = chainConfig
-	config.GenesisBlockNum = genesisBlockNum
-	config.SequencerInboxMaxTimeVariation = DefaultSequencerInboxMaxTimeVariation
-
-	var deploymentParams bindings.RollupCreatorRollupDeploymentParams
-	deploymentParams.Config = config
-	deploymentParams.BatchPoster = batchPoster
-	deploymentParams.Validators = validators
-	deploymentParams.MaxDataSize = DefaultRollupCreatorRollupDeploymentParams.MaxDataSize
-	deploymentParams.NativeToken = DefaultRollupCreatorRollupDeploymentParams.NativeToken
-	deploymentParams.DeployFactoriesToL2 = true
-	deploymentParams.MaxFeePerGasForRetryables = DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
-	return r.RollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
-}
