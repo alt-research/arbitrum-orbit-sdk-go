@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
 
 type RollupCreator struct {
@@ -61,6 +62,7 @@ func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error) 
 		return nil, err
 	}
 	auth.Nonce = big.NewInt(int64(nonce))
+	auth.From = fromAddress
 	auth.Value = big.NewInt(0)
 	auth.GasLimit = uint64(300000) // in units
 	auth.GasPrice = gasPrice
@@ -87,7 +89,6 @@ func (r *RollupCreator) CreateRollup(
 	wasmModuleRoot [32]byte,
 	batchPoster common.Address,
 	validators []common.Address,
-
 ) (*ethtypes.Transaction, error) {
 	var config bindings.Config
 	config.ConfirmPeriodBlocks = types.DefaultConfig.ConfirmPeriodBlocks
@@ -114,10 +115,23 @@ func (r *RollupCreator) CreateRollup(
 	if err != nil {
 		return nil, err
 	}
+
+	// setting nonce and gas price
+	nonce, err := r.Client.PendingNonceAt(context.Background(), r.opts.From)
+	if err != nil {
+		return nil, err
+	}
+	// todo
+	r.opts.Nonce = big.NewInt(int64(nonce))
+	r.opts.Value = big.NewInt(1250000000000000)
 	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
 
 func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
+	err := utils.WaitTx(ctx, r.Client, txn, false)
+	if err != nil {
+		return nil, err
+	}
 	receipt, err := r.Client.TransactionReceipt(ctx, txn.Hash())
 	if err != nil {
 		return nil, err
