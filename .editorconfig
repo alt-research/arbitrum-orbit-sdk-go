@@ -1,0 +1,16 @@
+# Top-most EditorConfig file
+root = true
+
+# Unix-style line endings
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+
+# Indentation settings
+[*.{sh,yaml,json}]
+indent_style = space
+indent_size = 2
+
+# Trim trailing whitespace
+[{makefile,Makefile,go}]
+indent_style = tab
