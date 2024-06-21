@@ -63,8 +63,7 @@ func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error) 
 	}
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.From = fromAddress
-	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(300000) // in units
+	auth.GasLimit = uint64(9268689) // in units
 	auth.GasPrice = gasPrice
 
 	// rollupCreatorTransactor, err := bindings.NewRollupCreatorCaller(rollupCreatorAddr, client)
@@ -89,6 +88,7 @@ func (r *RollupCreator) CreateRollup(
 	wasmModuleRoot [32]byte,
 	batchPoster common.Address,
 	validators []common.Address,
+	value *big.Int,
 ) (*ethtypes.Transaction, error) {
 	var config bindings.Config
 	config.ConfirmPeriodBlocks = types.DefaultConfig.ConfirmPeriodBlocks
@@ -99,6 +99,7 @@ func (r *RollupCreator) CreateRollup(
 	config.Owner = owner
 	config.LoserStakeEscrow = loserStakeEscrow
 	config.ChainConfig = chainConfig
+	config.ChainId = chainId
 	config.GenesisBlockNum = genesisBlockNum
 	config.SequencerInboxMaxTimeVariation = types.DefaultSequencerInboxMaxTimeVariation
 
@@ -121,9 +122,9 @@ func (r *RollupCreator) CreateRollup(
 	if err != nil {
 		return nil, err
 	}
-	// todo
 	r.opts.Nonce = big.NewInt(int64(nonce))
-	r.opts.Value = big.NewInt(1250000000000000)
+	r.opts.Value = value
+
 	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
 

@@ -43,14 +43,14 @@ var (
 	DefaultConfig = bindings.Config{
 		ConfirmPeriodBlocks:            15,
 		ExtraChallengeTimeBlocks:       0,
-		StakeToken:                     common.HexToAddress("0x0000000000000000000000000000000000000000"),
+		StakeToken:                     common.Address{},
 		BaseStake:                      DefaultBaseStake,
 		SequencerInboxMaxTimeVariation: DefaultSequencerInboxMaxTimeVariation,
 	}
 	DefaultRollupCreatorRollupDeploymentParams = bindings.RollupCreatorRollupDeploymentParams{
 		Config:                    DefaultConfig,
 		MaxDataSize:               big.NewInt(104857),
-		NativeToken:               common.HexToAddress("0x0000000000000000000000000000000000000000"),
+		NativeToken:               common.Address{},
 		DeployFactoriesToL2:       true,
 		MaxFeePerGasForRetryables: big.NewInt(100000000),
 	}
