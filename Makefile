@@ -1,4 +1,4 @@
-IMG ?= raas:latest
+IMG ?= arbctl:latest
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -82,7 +82,7 @@ build: ## Build binary.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: image
 image: ## Build docker image with local proxy setting
-	docker build --progress=plain -t ${IMG} . --build-arg=GOPROXY=$(shell go env GOPROXY),GOPATH=$(shell go env GOPATH)
+	docker build . --progress=plain -t ${IMG} --build-arg GOPROXY=$(shell go env GOPROXY)
 
 ##@ Build Dependencies
 $(LOCALBIN):

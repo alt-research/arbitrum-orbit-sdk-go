@@ -1,39 +1,28 @@
 FROM golang:1.22 AS builder
 
-COPY . /src
+ARG GOPROXY
+
 WORKDIR /src
+COPY go.mod go.sum /src/
+RUN --mount=type=secret,id=git_config,target=/root/.gitconfig \
+        --mount=type=secret,id=git_credentials,target=/root/.config/git/credentials \
+        --mount=type=secret,id=gh_hosts,target=/root/.config/gh/hosts.yml \
+        go mod download -x
+
+COPY . /src
 
 RUN --mount=type=secret,id=git_config,target=/root/.gitconfig \
         --mount=type=secret,id=git_credentials,target=/root/.config/git/credentials \
         --mount=type=secret,id=gh_hosts,target=/root/.config/gh/hosts.yml \
         make build
 
-FROM debian:stable-slim
+FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        ca-certificates  \
-        jq \
-        git \
+RUN apt-get update && apt-get install -y \
+        ca-certificates \
         curl \
-        python3 \
-        python3-pip \
-        netbase \
-        netcat-traditional \
-        && rm -rf /var/lib/apt/lists/ \
-        && apt-get autoremove -y && apt-get autoclean -y
+        && rm -rf /var/lib/apt/lists/*
 
-RUN pip install apprise --break-system-packages
+COPY --from=builder /src/bin /usr/local/bin
 
-RUN curl -L https://foundry.paradigm.xyz | /bin/bash && /root/.foundry/bin/foundryup
-
-ENV PATH=/root/.foundry/bin:$PATH
-
-COPY --from=builder /src/bin /app
-
-WORKDIR /app
-
-EXPOSE 8000
-EXPOSE 9000
-VOLUME /data/conf
-
-CMD ["/app/apiserver"]
+CMD ["/usr/local/bin/arbctl"]
