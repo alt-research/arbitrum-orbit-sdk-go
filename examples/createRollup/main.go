@@ -16,7 +16,8 @@ func main() {
 	fmt.Println("start creating rollup")
 	privateKey := os.Getenv("PRIVATE_KEY")
 	owner := os.Getenv("OWNER")
-	rollupCreator, err := rollup.NewRollupCreator(privateKey, "https://arbitrum-sepolia.blockpi.network/v1/rpc/public")
+	l1conn := os.Getenv("L1CONN")
+	rollupCreator, err := rollup.NewRollupCreator(privateKey, l1conn)
 	if err != nil {
 		fmt.Printf("create rollup creator failed: %s\n", err.Error())
 		os.Exit(1)
@@ -42,7 +43,7 @@ func main() {
 		context.Background(),
 		6,
 		common.HexToAddress(owner),
-		big.NewInt(20240621),
+		big.NewInt(20240625),
 		string(l2config),
 		uint64(l2configtype.Arbitrum.GenesisBlockNum),
 		common.HexToAddress(owner),
@@ -58,4 +59,16 @@ func main() {
 	}
 
 	fmt.Println(txn.Hash().String())
+	rollupContracts, err := rollupCreator.ParseRollupContracts(context.Background(), 6, txn)
+	if err != nil {
+		fmt.Printf("parse rollup contracts failed: %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	contracts, err := json.Marshal(rollupContracts)
+	if err != nil {
+		fmt.Printf("marshal rollup contracts failed: %s\n", err.Error())
+		os.Exit(1)
+	}
+	fmt.Println(string(contracts))
 }

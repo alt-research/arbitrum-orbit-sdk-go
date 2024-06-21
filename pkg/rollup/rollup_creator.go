@@ -17,11 +17,10 @@ import (
 )
 
 type RollupCreator struct {
-	RPC           string
-	PrivateKey    string
-	Client        *ethclient.Client
-	opts          *bind.TransactOpts
-	RollupCreator *bindings.RollupCreator
+	RPC        string
+	PrivateKey string
+	Client     *ethclient.Client
+	opts       *bind.TransactOpts
 }
 
 func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error) {
@@ -128,7 +127,7 @@ func (r *RollupCreator) CreateRollup(
 	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
 
-func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
+func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainIndex int, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
 	err := utils.WaitTx(ctx, r.Client, txn, false)
 	if err != nil {
 		return nil, err
@@ -137,7 +136,14 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.
 	if err != nil {
 		return nil, err
 	}
-	rollupCreatorRollupCreated, err := r.RollupCreator.ParseRollupCreated(*receipt.Logs[len(receipt.Logs)-1])
+	rollupCreatorAddr := types.RollupCreatorAddr[chainIndex]
+
+	rollupCreatorParser, err := bindings.NewRollupCreator(common.HexToAddress(rollupCreatorAddr), r.Client)
+	if err != nil {
+		return nil, err
+	}
+
+	rollupCreatorRollupCreated, err := rollupCreatorParser.ParseRollupCreated(*receipt.Logs[len(receipt.Logs)-1])
 	if err != nil {
 		return nil, err
 	}
