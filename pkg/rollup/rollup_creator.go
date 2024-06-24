@@ -87,6 +87,7 @@ func (r *RollupCreator) CreateRollup(
 	batchPoster common.Address,
 	validators []common.Address,
 	value *big.Int,
+	gasLimit uint64,
 ) (*ethtypes.Transaction, error) {
 	var config bindings.Config
 	config.ConfirmPeriodBlocks = types.DefaultConfig.ConfirmPeriodBlocks
@@ -122,6 +123,7 @@ func (r *RollupCreator) CreateRollup(
 	}
 	r.opts.Nonce = big.NewInt(int64(nonce))
 	r.opts.Value = value
+	r.opts.GasLimit = gasLimit
 
 	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
