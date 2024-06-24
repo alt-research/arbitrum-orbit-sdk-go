@@ -78,7 +78,6 @@ func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error) 
 
 func (r *RollupCreator) CreateRollup(
 	ctx context.Context,
-	chainIndex int,
 	owner common.Address,
 	chainId *big.Int,
 	chainConfig string,
@@ -110,7 +109,7 @@ func (r *RollupCreator) CreateRollup(
 	deploymentParams.NativeToken = types.DefaultRollupCreatorRollupDeploymentParams.NativeToken
 	deploymentParams.DeployFactoriesToL2 = true
 	deploymentParams.MaxFeePerGasForRetryables = types.DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
-	rollupCreatorAddr := types.RollupCreatorAddr[chainIndex]
+	rollupCreatorAddr := types.ContractConfig[int(chainId.Int64())]
 	rollupCreatorTransactor, err := bindings.NewRollupCreatorTransactor(common.HexToAddress(rollupCreatorAddr), r.Client)
 	if err != nil {
 		return nil, err
@@ -127,7 +126,7 @@ func (r *RollupCreator) CreateRollup(
 	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
 
-func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainIndex int, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
+func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainId int, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
 	err := utils.WaitTx(ctx, r.Client, txn, false)
 	if err != nil {
 		return nil, err
@@ -136,7 +135,7 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainIndex int
 	if err != nil {
 		return nil, err
 	}
-	rollupCreatorAddr := types.RollupCreatorAddr[chainIndex]
+	rollupCreatorAddr := types.ContractConfig[chainId]
 
 	rollupCreatorParser, err := bindings.NewRollupCreator(common.HexToAddress(rollupCreatorAddr), r.Client)
 	if err != nil {

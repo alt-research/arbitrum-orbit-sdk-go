@@ -27,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println("receipt: ", receipt.Logs[len(receipt.Logs)-1])
-	rollupCreatorAddr := types.RollupCreatorAddr[6]
+	rollupCreatorAddr := types.ContractConfig[421614]
 	rollupCreatorParser, err := bindings.NewRollupCreator(common.HexToAddress(rollupCreatorAddr), rollupCreator.Client)
 	if err != nil {
 		fmt.Printf("create rollup contract parser failed: %s\n", err.Error())

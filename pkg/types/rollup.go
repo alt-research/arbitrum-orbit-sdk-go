@@ -9,26 +9,15 @@ import (
 )
 
 // source: https://github.com/OffchainLabs/arbitrum-orbit-sdk/blob/main/wagmi.config.ts#L94
-const (
-	ethereum        = "0x90d68b056c411015eae3ec0b98ad94e2c91419f1"
-	arbitrumOne     = "0x9CAd81628aB7D8e239F1A5B497313341578c5F71"
-	arbitrumNova    = "0x9CAd81628aB7D8e239F1A5B497313341578c5F71"
-	base            = "0x850F050C65B34966895AdA26a4D06923901916DB"
-	sepolia         = "0xfbd0b034e6305788007f6e0123cc5eae701a5751"
-	holesky         = "0xB512078282F462Ba104231ad856464Ceb0a7747e"
-	arbitrumSepolia = "0x06E341073b2749e0Bb9912461351f716DeCDa9b0"
-	baseSepolia     = "0x1E0921818df948c338380e722C8aE91Bb285763C"
-)
-
-var RollupCreatorAddr = [8]string{
-	ethereum,
-	arbitrumOne,
-	arbitrumNova,
-	base,
-	sepolia,
-	holesky,
-	arbitrumSepolia,
-	base,
+var ContractConfig = map[int]string{
+	1:        "0x90d68b056c411015eae3ec0b98ad94e2c91419f1",
+	42161:    "0x9CAd81628aB7D8e239F1A5B497313341578c5F71",
+	42170:    "0x9CAd81628aB7D8e239F1A5B497313341578c5F71",
+	8453:     "0x850F050C65B34966895AdA26a4D06923901916DB",
+	11155111: "0xfbd0b034e6305788007f6e0123cc5eae701a5751",
+	17000:    "0xB512078282F462Ba104231ad856464Ceb0a7747e",
+	421614:   "0x06E341073b2749e0Bb9912461351f716DeCDa9b0",
+	84532:    "0x1E0921818df948c338380e722C8aE91Bb285763C",
 }
 
 var (

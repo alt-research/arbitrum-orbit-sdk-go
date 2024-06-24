@@ -41,7 +41,6 @@ func main() {
 
 	txn, err := rollupCreator.CreateRollup(
 		context.Background(),
-		6,
 		common.HexToAddress(owner),
 		big.NewInt(20240625),
 		string(l2config),
