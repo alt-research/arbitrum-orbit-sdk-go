@@ -42,7 +42,7 @@ func main() {
 	txn, err := rollupCreator.CreateRollup(
 		context.Background(),
 		common.HexToAddress(owner),
-		big.NewInt(20240625),
+		big.NewInt(421614),
 		string(l2config),
 		uint64(l2configtype.Arbitrum.GenesisBlockNum),
 		common.HexToAddress(owner),
