@@ -2,7 +2,7 @@ package rollup
 
 import "github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
 
-func GenerateL2Config(chainId int64, initialChainOwner string) *types.L2Config {
+func GenerateL2Config(chainId int64, initialChainOwner string, enableAnyTrust bool) *types.L2Config {
 	return &types.L2Config{
 		ChainId:             chainId,
 		HomesteadBlock:      0,
@@ -26,7 +26,7 @@ func GenerateL2Config(chainId int64, initialChainOwner string) *types.L2Config {
 		Arbitrum: types.Arbitrum{
 			EnableArbOS:               true,
 			AllowDebugPrecompiles:     false,
-			DataAvailabilityCommittee: true,
+			DataAvailabilityCommittee: enableAnyTrust,
 			InitialArbOSVersion:       20,
 			EigenDA:                   false,
 			InitialChainOwner:         initialChainOwner,
