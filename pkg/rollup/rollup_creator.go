@@ -80,6 +80,7 @@ func (r *RollupCreator) CreateRollup(
 	ctx context.Context,
 	owner common.Address,
 	chainId *big.Int,
+	parentChainId int,
 	chainConfig string,
 	genesisBlockNum uint64,
 	loserStakeEscrow common.Address,
@@ -110,7 +111,7 @@ func (r *RollupCreator) CreateRollup(
 	deploymentParams.NativeToken = types.DefaultRollupCreatorRollupDeploymentParams.NativeToken
 	deploymentParams.DeployFactoriesToL2 = true
 	deploymentParams.MaxFeePerGasForRetryables = types.DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
-	rollupCreatorAddr := types.ContractConfig[int(chainId.Int64())]
+	rollupCreatorAddr := types.ContractConfig[parentChainId]
 	rollupCreatorTransactor, err := bindings.NewRollupCreatorTransactor(common.HexToAddress(rollupCreatorAddr), r.Client)
 	if err != nil {
 		return nil, err
