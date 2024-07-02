@@ -27,7 +27,7 @@ func GenerateL2Config(chainId int64, initialChainOwner string) *types.L2Config {
 			EnableArbOS:               true,
 			AllowDebugPrecompiles:     false,
 			DataAvailabilityCommittee: true,
-			InitialArbOSVersion:       20,
+			InitialArbOSVersion:       30,
 			EigenDA:                   false,
 			InitialChainOwner:         initialChainOwner,
 			GenesisBlockNum:           0,
