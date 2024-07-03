@@ -13,9 +13,8 @@ import (
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
 )
 
-func GenerateWhitelistDAKeySetCalldata(sequencerInbox common.Address, keyset string) ([]byte, error) {
-	contractABI := `[function setValidKeyset(bytes keysetBytes)']`
-	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+func GenerateWhitelistDAKeySetCalldata(sequencerInbox common.Address, keyset []byte) ([]byte, error) {
+	parsedABI, err := abi.JSON(strings.NewReader(bindings.SequencerInboxABI))
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +31,7 @@ func WhiteListDAKeySet(
 	url string,
 	chainId *big.Int,
 	key *ecdsa.PrivateKey,
-	keyset string,
+	keyset []byte,
 ) (*types.Transaction, error) {
 	calldata, err := GenerateWhitelistDAKeySetCalldata(sequencerInbox, keyset)
 	if err != nil {

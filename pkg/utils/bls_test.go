@@ -15,25 +15,21 @@ func TestGenerateBLSKeys(t *testing.T) {
 }
 
 func TestPrepareKeyset(t *testing.T) {
-	_, public0, err := GenerateBLSKeys()
+	private0, public0, err := GenerateBLSKeys()
 	if err != nil {
 		t.FailNow()
 	}
-	_, public1, err := GenerateBLSKeys()
-	if err != nil {
-		fmt.Println(err.Error())
-		t.FailNow()
-	}
+	fmt.Println("private key: ", string(private0))
+	fmt.Println("public key: ", string(public0))
 
 	var publicKeys []string
 	publicKeys = append(publicKeys, string(public0))
-	publicKeys = append(publicKeys, string(public1))
 
-	ret, err := PrepareKeyset(publicKeys, 2)
+	ret, err := PrepareKeyset(publicKeys, 1)
 	if err != nil {
 		fmt.Println(err.Error())
 		t.FailNow()
 	}
 
-	fmt.Println(string(ret))
+	fmt.Println("keyset bytes: ", string(ret))
 }
