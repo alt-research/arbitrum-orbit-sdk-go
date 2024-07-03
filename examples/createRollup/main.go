@@ -23,7 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	l2configtype := rollup.GenerateL2Config(20240621, owner)
+	l2configtype := rollup.GenerateL2Config(20240621, owner, false)
 	l2config, err := json.Marshal(l2configtype)
 	if err != nil {
 		fmt.Printf("create l2config failed: %s\n", err.Error())
@@ -42,7 +42,8 @@ func main() {
 	txn, err := rollupCreator.CreateRollup(
 		context.Background(),
 		common.HexToAddress(owner),
-		big.NewInt(421614),
+		big.NewInt(20240621),
+		421614,
 		string(l2config),
 		uint64(l2configtype.Arbitrum.GenesisBlockNum),
 		common.HexToAddress(owner),
