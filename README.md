@@ -72,6 +72,8 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.
 ## Utils
 
 1. Wait transaction to pass the safe block
+2. Generate BLS Keys
+3. Prepare DA Keyset for whitelisting
 
 ```go
 func WaitTx(ctx context.Context, client *ethclient.Client, txn *ethtypes.Transaction, waitForSafePoll bool) error
