@@ -3,7 +3,9 @@ package utils
 import (
 	"crypto/ecdsa"
 	"crypto/rand"
+	"errors"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -18,4 +20,18 @@ func GenerateECDSAKeys() ([]byte, []byte, string, error) {
 	address := crypto.PubkeyToAddress(publicKey).Hex()
 
 	return privateKeyBytes, publicKeyBytes, address, nil
+}
+
+func GetAddressFromPrivateKey(privateKey string) (*ecdsa.PrivateKey, common.Address, error) {
+	key, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		return nil, common.Address{}, nil
+	}
+	publicKey := key.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return nil, common.Address{}, errors.New("Falied to cast public key to ECDSA")
+	}
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	return key, fromAddress, nil
 }

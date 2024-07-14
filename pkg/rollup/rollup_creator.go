@@ -2,14 +2,11 @@ package rollup
 
 import (
 	"context"
-	"crypto/ecdsa"
-	"errors"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
@@ -24,48 +21,11 @@ type RollupCreator struct {
 }
 
 func NewRollupCreator(privateKey string, l1conn string) (*RollupCreator, error) {
-	key, err := crypto.HexToECDSA(privateKey)
-	if err != nil {
-		return nil, err
-	}
-
 	client, err := ethclient.Dial(l1conn)
 	if err != nil {
 		return nil, err
 	}
-
-	publicKey := key.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		return nil, errors.New("Falied to cast public key to ECDSA")
-	}
-	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
-	if err != nil {
-		return nil, err
-	}
-
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	chainID, err := client.NetworkID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	auth, err := bind.NewKeyedTransactorWithChainID(key, chainID)
-	if err != nil {
-		return nil, err
-	}
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.From = fromAddress
-	auth.GasLimit = uint64(9268689) // in units
-	auth.GasPrice = gasPrice
-
-	// rollupCreatorTransactor, err := bindings.NewRollupCreatorCaller(rollupCreatorAddr, client)
+	auth, err := utils.GetBasicAuth(client, privateKey)
 	if err != nil {
 		return nil, err
 	}
