@@ -44,14 +44,6 @@ type Config struct {
 	SequencerInboxMaxTimeVariation ISequencerInboxMaxTimeVariation
 }
 
-// ISequencerInboxMaxTimeVariation is an auto generated low-level Go binding around an user-defined struct.
-type ISequencerInboxMaxTimeVariation struct {
-	DelayBlocks   *big.Int
-	FutureBlocks  *big.Int
-	DelaySeconds  *big.Int
-	FutureSeconds *big.Int
-}
-
 // RollupCreatorRollupDeploymentParams is an auto generated low-level Go binding around an user-defined struct.
 type RollupCreatorRollupDeploymentParams struct {
 	Config                    Config

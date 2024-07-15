@@ -61,6 +61,9 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.
 
 ## Bridge Setup
 
+1. GetL2TokenBridgeFactoryTemplate
+2. GetEstimateForDeployingFactory
+
 ## Interact with Rollup contracts (on parent chain)
 
 1. Whitelist DA Key
