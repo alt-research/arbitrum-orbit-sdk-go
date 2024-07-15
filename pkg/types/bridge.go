@@ -1,6 +1,5 @@
 package types
 
-// source:
 var TokenBridgeCreatorAddress = map[int]string{
 	1:        "0x60D9A46F24D5a35b95A78Dd3E793e55D94EE0660",
 	42161:    "0x2f5624dc8800dfA0A82AC03509Ef8bb8E7Ac000e",

@@ -9,7 +9,7 @@ import (
 )
 
 // source: https://github.com/OffchainLabs/arbitrum-orbit-sdk/blob/main/wagmi.config.ts#L94
-var ContractConfig = map[int]string{
+var RollupCreatorAddress = map[int]string{
 	1:        "0x90d68b056c411015eae3ec0b98ad94e2c91419f1",
 	42161:    "0x9CAd81628aB7D8e239F1A5B497313341578c5F71",
 	42170:    "0x9CAd81628aB7D8e239F1A5B497313341578c5F71",
