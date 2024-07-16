@@ -2,6 +2,8 @@ package utils
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -33,4 +35,11 @@ func GetBasicAuth(client *ethclient.Client, privateKey string) (*bind.TransactOp
 	auth.GasLimit = uint64(9268689)
 	auth.GasPrice = gasPrice
 	return auth, nil
+}
+
+func ConcatError(msg string, err error) error {
+	if err != nil {
+		return errors.New(fmt.Sprintf("%s: %s", msg, err.Error()))
+	}
+	return errors.New(msg)
 }

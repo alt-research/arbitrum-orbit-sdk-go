@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
 
 var (
@@ -40,9 +41,9 @@ func NewL1ToL2MessageGasEstimator(baseChainRpc, orbitChainRpc string) (*L1ToL2Me
 }
 
 // Get gas limit, gas price and submission price estimates for sending an L1->L2 message
-func (e *L1ToL2MessageGasEstimator) estimateAll(
+func (e *L1ToL2MessageGasEstimator) EstimateAll(
 	ctx context.Context,
-	retryableData types.RetryableData,
+	retryableData *types.RetryableData,
 	l1BaseFee *big.Int,
 	inbox common.Address,
 	gasOverrides *types.GasOverrides,
@@ -50,9 +51,12 @@ func (e *L1ToL2MessageGasEstimator) estimateAll(
 	// estimate l2 maxFeePerGas
 	maxFeePerGas, err := e.EstimateMaxFeePerGas(ctx, gasOverrides.MaxFeePerGas)
 	if err != nil {
-		return 0, nil, nil, nil, err
+		return 0, nil, nil, nil, utils.ConcatError("EstimateMaxFeePerGas: ", err)
 	}
 	data, err := hex.DecodeString(retryableData.Data)
+	if err != nil {
+		return 0, nil, nil, nil, utils.ConcatError("DecodeString for retryableData.Data: ", err)
+	}
 
 	// estimate the l2 gas limit
 	gasLimit, err := e.EstimateRetryableTicketGasLimit(
@@ -65,13 +69,18 @@ func (e *L1ToL2MessageGasEstimator) estimateAll(
 		common.HexToAddress(retryableData.From),
 		data,
 	)
+
 	if err != nil {
-		return 0, nil, nil, nil, err
+		return 0, nil, nil, nil, utils.ConcatError("EstimateRetryableTicketGasLimit: ", err)
 	}
 
 	// estimate the submission fee
 	dataLength := len(data)
 	submissionFee, err := e.EstimateSubmissionFee(ctx, l1BaseFee, big.NewInt(int64(dataLength)), inbox, gasOverrides.MaxSubmissionFee)
+	if err != nil {
+		return 0, nil, nil, nil, err
+	}
+	utils.ConcatError("EstimateSubmissionFee: ", err)
 	deposit := new(big.Int).Mul(big.NewInt(int64(gasLimit)), maxFeePerGas)
 	deposit = new(big.Int).Add(deposit, submissionFee)
 	deposit = new(big.Int).Add(deposit, retryableData.L2CallValue)
@@ -92,8 +101,9 @@ func (e *L1ToL2MessageGasEstimator) EstimateRetryableTicketGasLimit(
 ) (uint64, error) {
 	abi, err := bindings.NodeInterfaceMetaData.GetAbi()
 	if err != nil {
-		return 0, err
+		return 0, utils.ConcatError("GetAbi: ", err)
 	}
+	deposit = new(big.Int).Add(big.NewInt(1000000000000000000), l2CallValue)
 	callData, err := abi.Pack(
 		"estimateRetryableTicket",
 		sender,
@@ -105,7 +115,7 @@ func (e *L1ToL2MessageGasEstimator) EstimateRetryableTicketGasLimit(
 		data,
 	)
 	if err != nil {
-		return 0, err
+		return 0, utils.ConcatError("Pack: ", err)
 	}
 	callMsg := ethereum.CallMsg{
 		To:   &types.NODE_INTERFACE_ADDRESS,

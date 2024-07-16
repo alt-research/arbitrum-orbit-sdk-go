@@ -29,17 +29,6 @@ var (
 	_ = abi.ConvertType
 )
 
-// L2RuntimeCode is an auto generated low-level Go binding around an user-defined struct.
-type L2RuntimeCode struct {
-	Router          []byte
-	StandardGateway []byte
-	CustomGateway   []byte
-	WethGateway     []byte
-	AeWeth          []byte
-	UpgradeExecutor []byte
-	Multicall       []byte
-}
-
 // L2TokenBridgeFactoryTemplateMetaData contains all meta data concerning the L2TokenBridgeFactoryTemplate contract.
 var L2TokenBridgeFactoryTemplateMetaData = &bind.MetaData{
 	ABI: "[{\"inputs\":[],\"name\":\"L2AtomicTokenBridgeFactory_AlreadyExists\",\"type\":\"error\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes\",\"name\":\"router\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"standardGateway\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"customGateway\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"wethGateway\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"aeWeth\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"upgradeExecutor\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"multicall\",\"type\":\"bytes\"}],\"internalType\":\"structL2RuntimeCode\",\"name\":\"l2Code\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"l1Router\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"l1StandardGateway\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"l1CustomGateway\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"l1WethGateway\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"l1Weth\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"l2StandardGatewayCanonicalAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"rollupOwner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"aliasedL1UpgradeExecutor\",\"type\":\"address\"}],\"name\":\"deployL2Contracts\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",

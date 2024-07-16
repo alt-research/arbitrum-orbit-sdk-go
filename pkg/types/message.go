@@ -21,13 +21,13 @@ type GasOverrides struct {
 	MaxFeePerGas     *PercentIncrease
 }
 
-// type TransactionRequestRetryableGasOverrides struct {
-// 	MaxSubmissionCostForFactory   GasOverrideOptions
-// 	MaxGasForFactory              GasOverrideOptions
-// 	MaxSubmissionCostForContracts GasOverrideOptions
-// 	MaxGasForContracts            GasOverrideOptions
-// 	maxGasPrice                   GasOverrideOptions
-// }
+type TransactionRequestRetryableGasOverrides struct {
+	MaxSubmissionCostForFactory   PercentIncrease
+	MaxGasForFactory              PercentIncrease
+	MaxSubmissionCostForContracts PercentIncrease
+	MaxGasForContracts            PercentIncrease
+	maxGasPrice                   PercentIncrease
+}
 
 type CreateTokenBridgeGetInputsResult struct {
 	Inbox              common.Address
