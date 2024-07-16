@@ -27,7 +27,7 @@ func Test_GetL2TokenBridgeFactoryTemplate(t *testing.T) {
 	fmt.Println(add)
 }
 
-func Test_GetEstimateForDeployingFactory(t *testing.T) {
+func Test_GetEstimateToDeployContracts(t *testing.T) {
 	// dummy private key
 	privatekey := "afe2bdd2c6bc8a7a87f1aee195a8f5a45de1007df742c8d85608ef6c85e3fb7c"
 	baseChainRpc := "https://arb1.arbitrum.io/rpc"
@@ -38,9 +38,10 @@ func Test_GetEstimateForDeployingFactory(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	err = bridgeDeployer.GetEstimateForDeployingFactory(context.Background())
+	gasEstimateToDeployContracts, err := bridgeDeployer.GetEstimateToDeployContracts(context.Background())
 	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
+	fmt.Println(gasEstimateToDeployContracts)
 }

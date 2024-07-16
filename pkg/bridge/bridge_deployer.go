@@ -101,61 +101,70 @@ func (b *BridgeDeployer) GetL2TokenBridgeFactoryTemplate() (common.Address, erro
 	return bridgeCreator.L2TokenBridgeFactoryTemplate(&bind.CallOpts{})
 }
 
-func (b *BridgeDeployer) GetEstimateForDeployingFactory(ctx context.Context) error {
+func (b *BridgeDeployer) CreateTokenBridgeGetInputs(ctx context.Context, retryableGasOverrides *types.TransactionRequestRetryableGasOverrides) {
+	// gasEstimateToDeployContracts,err := b.GetEstimateForDeployingFactory(ctx)
+
+}
+
+func (b *BridgeDeployer) GetMaxGasForContracts(ctx context.Context) {
+
+}
+
+func (b *BridgeDeployer) GetEstimateToDeployContracts(ctx context.Context) (uint64, error) {
 	bridgeCreator, err := bindings.NewBridgeCreator(common.HexToAddress(b.BridgeCreatorAddress), b.BaseChainClient)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	callOpts := &bind.CallOpts{}
 	routerAddress, err := bridgeCreator.L2RouterTemplate(callOpts)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	router, err := b.BaseChainClient.CodeAt(ctx, routerAddress, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	standardGatewayAddress, err := bridgeCreator.L2StandardGatewayTemplate(callOpts)
 	if err != nil {
-		return nil
+		return 0, err
 	}
 	standardGateway, err := b.BaseChainClient.CodeAt(ctx, standardGatewayAddress, nil)
 	customGatewayAddress, err := bridgeCreator.L2CustomGatewayTemplate(callOpts)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	customGateway, err := b.BaseChainClient.CodeAt(ctx, customGatewayAddress, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	wethGatewayAddress, err := bridgeCreator.L2WethGatewayTemplate(callOpts)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	wethGateway, err := b.BaseChainClient.CodeAt(ctx, wethGatewayAddress, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	aeWethAddress, err := bridgeCreator.L2WethTemplate(callOpts)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	aeWeth, err := b.BaseChainClient.CodeAt(ctx, aeWethAddress, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	l1Templates, err := bridgeCreator.L1Templates(callOpts)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	upgradeExecutorAddress := l1Templates.UpgradeExecutor
 	upgradeExecutor, err := b.BaseChainClient.CodeAt(ctx, upgradeExecutorAddress, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	multicallAddress, err := bridgeCreator.L2MulticallTemplate(callOpts)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	multicall, err := b.BaseChainClient.CodeAt(ctx, multicallAddress, nil)
 	l2RunTimeCode := bindings.L2RuntimeCode{
@@ -169,11 +178,11 @@ func (b *BridgeDeployer) GetEstimateForDeployingFactory(ctx context.Context) err
 	}
 	abi, err := bindings.L2TokenBridgeFactoryTemplateMetaData.GetAbi()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	l2TokenBridgeFactoryTemplate, err := b.GetL2TokenBridgeFactoryTemplate()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	_, _, addr, err := utils.GenerateECDSAKeys()
@@ -191,7 +200,7 @@ func (b *BridgeDeployer) GetEstimateForDeployingFactory(ctx context.Context) err
 		dummyAddr,
 	)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	callMsg := ethereum.CallMsg{
@@ -200,11 +209,11 @@ func (b *BridgeDeployer) GetEstimateForDeployingFactory(ctx context.Context) err
 	}
 	gasLimit, err := b.BaseChainClient.EstimateGas(context.Background(), callMsg)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	fmt.Println("gas limit: ", gasLimit)
-	return nil
+	return gasLimit, nil
 
 }
 func (b *BridgeDeployer) fetchAllowance(owner, spender common.Address) (*big.Int, error) {
