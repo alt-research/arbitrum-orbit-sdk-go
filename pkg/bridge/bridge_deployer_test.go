@@ -31,12 +31,13 @@ func TestGetL2TokenBridgeFactoryTemplate(t *testing.T) {
 func TestGetEstimateToDeployContracts(t *testing.T) {
 	// dummy private key
 	privatekey := "afe2bdd2c6bc8a7a87f1aee195a8f5a45de1007df742c8d85608ef6c85e3fb7c"
-	baseChainRpc := "https://arb1.arbitrum.io/rpc"
-	chainChainRpc := ""
-	rollupAddress := ""
+	baseChainRpc := "https://arbitrum-sepolia.blockpi.network/v1/rpc/public"
+	chainChainRpc := "https://orbit-demo.alt.technology"
+	rollupAddress := "0x31ec695619dAba46Bcd1A0080af5C58594BF5843"
 	nativeToken := common.Address{}
 	bridgeDeployer, err := NewBridgeDeployer(privatekey, baseChainRpc, chainChainRpc, rollupAddress, nativeToken)
 	if err != nil {
+		fmt.Println(err.Error())
 		t.Fail()
 	}
 	gasEstimateToDeployContracts, err := bridgeDeployer.GetEstimateToDeployContracts(context.Background())
