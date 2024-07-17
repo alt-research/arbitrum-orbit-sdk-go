@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package bindings
+package sequencerinboxgen
 
 import (
 	"errors"
@@ -35,6 +35,14 @@ type IBridgeTimeBounds struct {
 	MaxTimestamp   uint64
 	MinBlockNumber uint64
 	MaxBlockNumber uint64
+}
+
+// ISequencerInboxMaxTimeVariation is an auto generated low-level Go binding around an user-defined struct.
+type ISequencerInboxMaxTimeVariation struct {
+	DelayBlocks   *big.Int
+	FutureBlocks  *big.Int
+	DelaySeconds  *big.Int
+	FutureSeconds *big.Int
 }
 
 // SequencerInboxMetaData contains all meta data concerning the SequencerInbox contract.

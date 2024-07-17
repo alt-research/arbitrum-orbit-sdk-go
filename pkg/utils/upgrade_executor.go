@@ -11,10 +11,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/sequencerinboxgen"
 )
 
 func GenerateWhitelistDAKeySetCalldata(sequencerInbox common.Address, keyset []byte) ([]byte, error) {
-	parsedABI, err := abi.JSON(strings.NewReader(bindings.SequencerInboxABI))
+	parsedABI, err := abi.JSON(strings.NewReader(sequencerinboxgen.SequencerInboxABI))
 	if err != nil {
 		return nil, err
 	}

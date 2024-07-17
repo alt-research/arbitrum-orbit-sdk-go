@@ -78,9 +78,8 @@ func (e *L1ToL2MessageGasEstimator) EstimateAll(
 	dataLength := len(data)
 	submissionFee, err := e.EstimateSubmissionFee(ctx, l1BaseFee, big.NewInt(int64(dataLength)), inbox, gasOverrides.MaxSubmissionFee)
 	if err != nil {
-		return 0, nil, nil, nil, err
+		return 0, nil, nil, nil, utils.ConcatError("EstimateSubmissionFee: ", err)
 	}
-	utils.ConcatError("EstimateSubmissionFee: ", err)
 	deposit := new(big.Int).Mul(big.NewInt(int64(gasLimit)), maxFeePerGas)
 	deposit = new(big.Int).Add(deposit, submissionFee)
 	deposit = new(big.Int).Add(deposit, retryableData.L2CallValue)
