@@ -26,6 +26,7 @@ type BridgeDeployer struct {
 	BaseChainID           *big.Int
 	BaseChainRpc          string
 	BaseChainDeployerKey  string
+	BaseChainDeployerAddr string
 	BaseChainClient       *ethclient.Client
 	BridgeCreatorAddress  string
 	BaseChainTransactOpts *bind.TransactOpts
@@ -62,12 +63,15 @@ func NewBridgeDeployer(
 	if err != nil {
 		return nil, err
 	}
+	_, deployerAddress, err := utils.GetAddressFromPrivateKey(privateKey)
+
 	return &BridgeDeployer{
 		BaseChainID:           chainID,
 		BaseChainRpc:          baseChainRpc,
 		BaseChainClient:       baseChainClient,
 		BaseChainTransactOpts: auth,
 		BaseChainDeployerKey:  privateKey,
+		BaseChainDeployerAddr: deployerAddress.Hex(),
 		BridgeCreatorAddress:  bridgeCreatorAddress,
 		ChildChainRpc:         childChainRpc,
 		ChildChainClient:      childChainClient,
@@ -93,18 +97,29 @@ func (b *BridgeDeployer) CreateNewTokenBridge(
 	l1TokenBridgeCreatorAddress common.Address,
 	l1BaseFee *big.Int,
 	retryableGasOverrides *types.TransactionRequestRetryableGasOverrides,
-) error {
+) (*ethtypes.Transaction, error) {
 	// 1. validate parent chain
 	// 2. create token bridge get inputs
 	maxGasForContracts, gasPrice, retryableFee, err := b.CreateTokenBridgeGetInputs(ctx, inbox, l1TokenBridgeCreatorAddress, l1BaseFee, retryableGasOverrides)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	fmt.Println("maxGasForContracts: ", maxGasForContracts)
 	fmt.Println("gasPrice: ", gasPrice)
 	fmt.Println("retryableFee: ", retryableFee)
-	return nil
+
+	l1AtomicTokenBridgeFactory, err := bindings.NewL1AtomicTokenBridgeFactory(l1TokenBridgeCreatorAddress, b.BaseChainClient)
+	if err != nil {
+		return nil, err
+	}
+	b.BaseChainTransactOpts.Value = retryableFee
+	txn, err := l1AtomicTokenBridgeFactory.CreateTokenBridge(b.BaseChainTransactOpts, inbox, common.HexToAddress(b.BaseChainDeployerAddr), big.NewInt(int64(maxGasForContracts)), gasPrice)
+	if err != nil {
+		return nil, err
+	}
+
+	return txn, nil
 }
 
 func (b *BridgeDeployer) CreateTokenBridgeGetInputs(
@@ -114,10 +129,6 @@ func (b *BridgeDeployer) CreateTokenBridgeGetInputs(
 	l1BaseFee *big.Int,
 	retryableGasOverrides *types.TransactionRequestRetryableGasOverrides,
 ) (uint64, *big.Int, *big.Int, error) {
-	_, deployerAddress, err := utils.GetAddressFromPrivateKey(b.BaseChainDeployerKey)
-	if err != nil {
-		return 0, nil, nil, err
-	}
 	l1AtomicTokenBridgeFactory, err := bindings.NewL1AtomicTokenBridgeFactory(l1TokenBridgeCreatorAddress, b.BaseChainClient)
 	if err != nil {
 		return 0, nil, nil, err
@@ -126,9 +137,12 @@ func (b *BridgeDeployer) CreateTokenBridgeGetInputs(
 	if err != nil {
 		return 0, nil, nil, err
 	}
+	if gasPrice.Int64() < 100000000 {
+		gasPrice = big.NewInt(100000000)
+	}
 
 	// run retryable estimate for deploying L2 factory
-	_, submissionFee, _, _, err := b.GetEstimateForDeployingFactory(ctx, inbox, deployerAddress.Hex(), l1BaseFee)
+	_, submissionFee, _, _, err := b.GetEstimateForDeployingFactory(ctx, inbox, b.BaseChainDeployerAddr, l1BaseFee)
 	if err != nil {
 		return 0, nil, nil, err
 	}

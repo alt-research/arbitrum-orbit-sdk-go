@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
@@ -50,7 +50,7 @@ func (r *RollupCreator) CreateRollup(
 	value *big.Int,
 	gasLimit uint64,
 ) (*ethtypes.Transaction, error) {
-	var config bindings.Config
+	var config rollupgen.Config
 	config.ConfirmPeriodBlocks = types.DefaultConfig.ConfirmPeriodBlocks
 	config.ExtraChallengeTimeBlocks = types.DefaultConfig.ExtraChallengeTimeBlocks
 	config.StakeToken = types.DefaultConfig.StakeToken
@@ -63,7 +63,7 @@ func (r *RollupCreator) CreateRollup(
 	config.GenesisBlockNum = genesisBlockNum
 	config.SequencerInboxMaxTimeVariation = types.DefaultSequencerInboxMaxTimeVariation
 
-	var deploymentParams bindings.RollupCreatorRollupDeploymentParams
+	var deploymentParams rollupgen.RollupCreatorRollupDeploymentParams
 	deploymentParams.Config = config
 	deploymentParams.BatchPoster = batchPoster
 	deploymentParams.Validators = validators
@@ -72,7 +72,7 @@ func (r *RollupCreator) CreateRollup(
 	deploymentParams.DeployFactoriesToL2 = true
 	deploymentParams.MaxFeePerGasForRetryables = types.DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
 	rollupCreatorAddr := types.RollupCreatorAddress[parentChainId]
-	rollupCreatorTransactor, err := bindings.NewRollupCreatorTransactor(common.HexToAddress(rollupCreatorAddr), r.Client)
+	rollupCreatorTransactor, err := rollupgen.NewRollupCreatorTransactor(common.HexToAddress(rollupCreatorAddr), r.Client)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (r *RollupCreator) CreateRollup(
 	return rollupCreatorTransactor.CreateRollup(r.opts, deploymentParams)
 }
 
-func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainId int, txn *ethtypes.Transaction) (*bindings.RollupCreatorRollupCreated, error) {
+func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainId int, txn *ethtypes.Transaction) (*rollupgen.RollupCreatorRollupCreated, error) {
 	err := utils.WaitTx(ctx, r.Client, txn, false)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, chainId int, t
 	}
 	rollupCreatorAddr := types.RollupCreatorAddress[chainId]
 
-	rollupCreatorParser, err := bindings.NewRollupCreator(common.HexToAddress(rollupCreatorAddr), r.Client)
+	rollupCreatorParser, err := rollupgen.NewRollupCreator(common.HexToAddress(rollupCreatorAddr), r.Client)
 	if err != nil {
 		return nil, err
 	}

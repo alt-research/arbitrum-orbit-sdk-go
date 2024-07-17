@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -91,7 +92,7 @@ func TestCreateNewTokenBridge(t *testing.T) {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
-	err = bridgeDeployer.CreateNewTokenBridge(
+	txn, err := bridgeDeployer.CreateNewTokenBridge(
 		context.Background(),
 		common.HexToAddress(inboxAddress),
 		common.HexToAddress(tokenBridgeCreator),
@@ -102,4 +103,10 @@ func TestCreateNewTokenBridge(t *testing.T) {
 		fmt.Println(err.Error())
 		t.Fail()
 	}
+	receipt, err := bind.WaitMined(context.Background(), bridgeDeployer.BaseChainClient, txn)
+	if err != nil {
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	fmt.Println(receipt.TxHash)
 }
