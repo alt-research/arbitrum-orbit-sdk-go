@@ -2,6 +2,7 @@ package message
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 	"strings"
 
@@ -80,12 +81,17 @@ func NewParentTransactionReceipt(to, from common.Address, receipt *types.Receipt
 func (p *ParentTransactionReceipt) GetParentToChildMessages(inbox string) error {
 	messageEvents, err := p.GetMessageEvents()
 	if err != nil {
-		return nil
+		return err
 	}
 	for _, me := range messageEvents {
+		fmt.Println("message index: ", me.BridgeMessageDelivered.MessageIndex)
 		readInbox := me.BridgeMessageDelivered.Inbox.Hex()
 		if me.BridgeMessageDelivered.Kind == L1MessageType_submitRetryableTx && strings.EqualFold(readInbox, inbox) {
-
+			messageData, err := DecodeMessageData(me.InboxMessageDelivered.Data)
+			if err != nil {
+				return nil
+			}
+			fmt.Println("message data: ", messageData)
 		}
 	}
 	return nil
@@ -106,7 +112,7 @@ func (p *ParentTransactionReceipt) GetMessageEvents() ([]*MessageEvent, error) {
 	var messageEvents []*MessageEvent
 	for _, bridgeMessage := range messageDeliveredEvents {
 		for _, inboxMessage := range inboxMessageDeliveredEvents {
-			if inboxMessage.MessageNum == bridgeMessage.MessageIndex {
+			if inboxMessage.MessageNum.Uint64() == bridgeMessage.MessageIndex.Uint64() {
 				messageEvents = append(messageEvents, &MessageEvent{
 					BridgeMessageDelivered: bridgeMessage,
 					InboxMessageDelivered:  inboxMessage,
@@ -127,6 +133,8 @@ func (p *ParentTransactionReceipt) getMessageDeliveredEvents() ([]*rollupgen.Bri
 	for _, vLog := range p.Logs {
 		if vLog.Topics[0] == MessageDeliveredSigHash {
 			var messageDelivered rollupgen.BridgeMessageDelivered
+			messageDelivered.MessageIndex = vLog.Topics[1].Big()
+			messageDelivered.BeforeInboxAcc = vLog.Topics[2]
 			err := MessageDeliveredABI.UnpackIntoInterface(&messageDelivered, "MessageDelivered", vLog.Data)
 			if err != nil {
 				return nil, err
@@ -142,6 +150,7 @@ func (p *ParentTransactionReceipt) getInboxMessageDeliveredEvents() ([]*rollupge
 	for _, vLog := range p.Logs {
 		if vLog.Topics[0] == InboxMessageDeliveredSigHash {
 			var inboxMessageDelivered rollupgen.InboxInboxMessageDelivered
+			inboxMessageDelivered.MessageNum = vLog.Topics[1].Big()
 			err := InboxMessageDeliveredABI.UnpackIntoInterface(&inboxMessageDelivered, "InboxMessageDelivered", vLog.Data)
 			if err != nil {
 				return nil, err
