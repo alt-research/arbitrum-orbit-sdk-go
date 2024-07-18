@@ -78,6 +78,10 @@ func (r *RollupCreator) ParseRollupContracts(ctx context.Context, txn *ethtypes.
 
 1. GetL2TokenBridgeFactoryTemplate
 2. GetEstimateForDeployingFactory
+2. GetEstimateToDeployContracts
+4. CreateTokenBridge
+
+## Retryable
 
 ## Interact with Rollup contracts (on parent chain)
 

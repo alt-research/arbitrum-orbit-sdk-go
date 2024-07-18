@@ -30,10 +30,9 @@ type TransactionRequestRetryableGasOverrides struct {
 }
 
 type CreateTokenBridgeGetInputsResult struct {
-	Inbox              common.Address
-	MaxGasForContracts *big.Int
-	GasPrice           *big.Int
-	RetryableFee       *big.Int
+	GasEstimateToDeployContracts *big.Int
+	GasPrice                     *big.Int
+	RetryableFee                 *big.Int
 }
 
 type RetryableData struct {
@@ -49,4 +48,30 @@ type RetryableData struct {
 	GasLimit               *big.Int
 	MaxFeePerGas           *big.Int
 	Data                   string
+}
+
+/**
+ * The components of a submit retryable message. Can be parsed from the
+ * events emitted from the Inbox.
+ */
+
+type RetryableMessageParams struct {
+	// Destination address for L2 message
+	DestAddress common.Address
+	// Call value in L2 message
+	L2CallValue *big.Int
+	// Value set at L1
+	L1Value *big.Int
+	// Max gas deducted from L2 balance to cover the base submission fee
+	MaxSubmissionFee *big.Int
+	// L2 address address to credit (gaslimit x gasprice - execution cost)
+	ExcessFeeRefundAddress common.Address
+	// Address to credit l2Callvalue on L2 if retryable txn times out or gets cancelled
+	CallValueRefundAddress common.Address
+	// Max gas deducted from user's L2 balance to cover L2 execution
+	GasLimit *big.Int
+	// maxFeePerGas
+	MaxFeePerGas *big.Int
+	// Calldata for of the L2 message
+	Data []byte
 }

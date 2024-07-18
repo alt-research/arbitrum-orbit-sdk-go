@@ -3,7 +3,6 @@ package bridge
 import (
 	"context"
 	"errors"
-	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"
@@ -100,21 +99,16 @@ func (b *BridgeDeployer) CreateNewTokenBridge(
 ) (*ethtypes.Transaction, error) {
 	// 1. validate parent chain
 	// 2. create token bridge get inputs
-	maxGasForContracts, gasPrice, retryableFee, err := b.CreateTokenBridgeGetInputs(ctx, inbox, l1TokenBridgeCreatorAddress, l1BaseFee, retryableGasOverrides)
+	getInputs, err := b.CreateTokenBridgeGetInputs(ctx, inbox, l1TokenBridgeCreatorAddress, l1BaseFee, retryableGasOverrides)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("maxGasForContracts: ", maxGasForContracts)
-	fmt.Println("gasPrice: ", gasPrice)
-	fmt.Println("retryableFee: ", retryableFee)
-
 	l1AtomicTokenBridgeFactory, err := bindings.NewL1AtomicTokenBridgeFactory(l1TokenBridgeCreatorAddress, b.BaseChainClient)
 	if err != nil {
 		return nil, err
 	}
-	b.BaseChainTransactOpts.Value = retryableFee
-	txn, err := l1AtomicTokenBridgeFactory.CreateTokenBridge(b.BaseChainTransactOpts, inbox, common.HexToAddress(b.BaseChainDeployerAddr), big.NewInt(int64(maxGasForContracts)), gasPrice)
+	b.BaseChainTransactOpts.Value = getInputs.RetryableFee
+	txn, err := l1AtomicTokenBridgeFactory.CreateTokenBridge(b.BaseChainTransactOpts, inbox, common.HexToAddress(b.BaseChainDeployerAddr), getInputs.GasEstimateToDeployContracts, getInputs.GasPrice)
 	if err != nil {
 		return nil, err
 	}
@@ -128,14 +122,14 @@ func (b *BridgeDeployer) CreateTokenBridgeGetInputs(
 	l1TokenBridgeCreatorAddress common.Address,
 	l1BaseFee *big.Int,
 	retryableGasOverrides *types.TransactionRequestRetryableGasOverrides,
-) (uint64, *big.Int, *big.Int, error) {
+) (*types.CreateTokenBridgeGetInputsResult, error) {
 	l1AtomicTokenBridgeFactory, err := bindings.NewL1AtomicTokenBridgeFactory(l1TokenBridgeCreatorAddress, b.BaseChainClient)
 	if err != nil {
-		return 0, nil, nil, err
+		return nil, err
 	}
 	gasPrice, err := b.ChildChainClient.SuggestGasPrice(ctx)
 	if err != nil {
-		return 0, nil, nil, err
+		return nil, err
 	}
 	if gasPrice.Int64() < 100000000 {
 		gasPrice = big.NewInt(100000000)
@@ -144,26 +138,32 @@ func (b *BridgeDeployer) CreateTokenBridgeGetInputs(
 	// run retryable estimate for deploying L2 factory
 	_, submissionFee, _, _, err := b.GetEstimateForDeployingFactory(ctx, inbox, b.BaseChainDeployerAddr, l1BaseFee)
 	if err != nil {
-		return 0, nil, nil, err
+		return nil, err
 	}
 	maxSubmissionCostForFactoryEstimation := new(big.Int).Mul(submissionFee, big.NewInt(2))
 	maxGasForFactoryEstimation, err := l1AtomicTokenBridgeFactory.GasLimitForL2FactoryDeployment(&bind.CallOpts{})
 	if err != nil {
-		return 0, nil, nil, err
+		return nil, err
 	}
 
 	// run retryable estimate for deploying L2 contracts
 	// we do this estimate using L2 factory template on L1 because on L2 factory does not yet exist
 	gasEstimateToDeployContracts, err := b.GetEstimateToDeployContracts(ctx)
 	if err != nil {
-		return 0, nil, nil, err
+		return nil, err
 	}
 	maxSubmissionCostForContractsEstimation := new(big.Int).Mul(submissionFee, big.NewInt(2))
 	retryableFee := new(big.Int).Add(maxSubmissionCostForFactoryEstimation, maxSubmissionCostForContractsEstimation)
 	retryableFee = new(big.Int).Add(retryableFee, new(big.Int).Mul(maxGasForFactoryEstimation, gasPrice))
 	retryableFee = new(big.Int).Add(retryableFee, new(big.Int).Mul(big.NewInt(int64(gasEstimateToDeployContracts)), gasPrice))
 
-	return gasEstimateToDeployContracts, gasPrice, retryableFee, nil
+	getInputsResult := &types.CreateTokenBridgeGetInputsResult{
+		GasEstimateToDeployContracts: big.NewInt(int64(gasEstimateToDeployContracts)),
+		GasPrice:                     gasPrice,
+		RetryableFee:                 retryableFee,
+	}
+
+	return getInputsResult, nil
 
 }
 
@@ -340,7 +340,6 @@ func (b *BridgeDeployer) GetEstimateToDeployContracts(ctx context.Context) (uint
 		return 0, err
 	}
 
-	fmt.Println("gas limit: ", gasLimit)
 	return gasLimit, nil
 
 }
