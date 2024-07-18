@@ -3,6 +3,7 @@ package message
 import (
 	"errors"
 	"math/big"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -21,9 +22,16 @@ var (
 	InboxMessageDeliveredABI, _  = rollupgen.InboxMetaData.GetAbi()
 )
 
+// https://github.com/OffchainLabs/nitro/blob/c7f3429e2456bf5ca296a49cec3bb437420bc2bb/contracts/src/libraries/MessageTypes.sol
+const (
+	L1MessageType_submitRetryableTx = 9
+	L1MessageType_ethDeposit        = 12
+	L2MessageType_signedTx          = 4
+)
+
 type MessageEvent struct {
-	bridgeMessageDelivered *rollupgen.BridgeMessageDelivered
-	inboxMessageDelivered  *rollupgen.InboxInboxMessageDelivered
+	BridgeMessageDelivered *rollupgen.BridgeMessageDelivered
+	InboxMessageDelivered  *rollupgen.InboxInboxMessageDelivered
 }
 
 type ParentTransaction struct {
@@ -69,11 +77,17 @@ func NewParentTransactionReceipt(to, from common.Address, receipt *types.Receipt
 	}
 }
 
-func (p *ParentTransactionReceipt) GetParentToChildMessages() error {
-	// messageDeliveredEvents, inboxMessageDeliveredEvents, err := p.GetMessageEvents()
-	// if err != nil {
-	// 	return nil
-	// }
+func (p *ParentTransactionReceipt) GetParentToChildMessages(inbox string) error {
+	messageEvents, err := p.GetMessageEvents()
+	if err != nil {
+		return nil
+	}
+	for _, me := range messageEvents {
+		readInbox := me.BridgeMessageDelivered.Inbox.Hex()
+		if me.BridgeMessageDelivered.Kind == L1MessageType_submitRetryableTx && strings.EqualFold(readInbox, inbox) {
+
+		}
+	}
 	return nil
 }
 
@@ -94,8 +108,8 @@ func (p *ParentTransactionReceipt) GetMessageEvents() ([]*MessageEvent, error) {
 		for _, inboxMessage := range inboxMessageDeliveredEvents {
 			if inboxMessage.MessageNum == bridgeMessage.MessageIndex {
 				messageEvents = append(messageEvents, &MessageEvent{
-					bridgeMessageDelivered: bridgeMessage,
-					inboxMessageDelivered:  inboxMessage,
+					BridgeMessageDelivered: bridgeMessage,
+					InboxMessageDelivered:  inboxMessage,
 				})
 				break
 			}

@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
@@ -137,7 +138,7 @@ func (e *L1ToL2MessageGasEstimator) EstimateSubmissionFee(
 	}
 	pi := &types.PercentIncrease{}
 	if option.Base == nil {
-		inboxInstance, err := bindings.NewInbox(inbox, e.BaseChainClient)
+		inboxInstance, err := rollupgen.NewInbox(inbox, e.BaseChainClient)
 		if err != nil {
 			return nil, err
 		}

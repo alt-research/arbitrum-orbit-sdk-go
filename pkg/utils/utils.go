@@ -7,6 +7,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -42,4 +43,10 @@ func ConcatError(msg string, err error) error {
 		return errors.New(fmt.Sprintf("%s: %s", msg, err.Error()))
 	}
 	return errors.New(msg)
+}
+
+func AddressToBigInt(addr common.Address) *big.Int {
+	ret := big.NewInt(0)
+	ret.SetBytes(addr.Bytes())
+	return ret
 }
