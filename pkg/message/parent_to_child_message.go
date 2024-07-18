@@ -72,13 +72,11 @@ func Txx() error {
 	}
 	fmt.Println("receipt: ", receipt.Logs)
 	parentChainReceipt := NewParentTransactionReceipt(common.HexToAddress("0x66530799037b46913e52e9e0144d15ab6ed954f5"), common.HexToAddress("0x56c486d3786fa26cc61473c499a36eb9cc1fbd8e"), receipt)
-	messageDeliveredEvents, inboxMessageDeliveredEvents, err := parentChainReceipt.GetMessageEvents()
+	messsageEvents, err := parentChainReceipt.GetMessageEvents()
 	if err != nil {
 		return err
 	}
-	fmt.Println("length of messageDeliveredEvents: ", len(messageDeliveredEvents))
-	fmt.Println("length of inboxMessageDeliveredEvents: ", len(inboxMessageDeliveredEvents))
-
+	fmt.Println("length of messsageEvents: ", len(messsageEvents))
 	return nil
 
 }

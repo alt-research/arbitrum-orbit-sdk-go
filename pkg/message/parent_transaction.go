@@ -21,6 +21,11 @@ var (
 	InboxMessageDeliveredABI, _  = rollupgen.InboxMetaData.GetAbi()
 )
 
+type MessageEvent struct {
+	bridgeMessageDelivered *rollupgen.BridgeMessageDelivered
+	inboxMessageDelivered  *rollupgen.InboxInboxMessageDelivered
+}
+
 type ParentTransaction struct {
 }
 
@@ -64,19 +69,42 @@ func NewParentTransactionReceipt(to, from common.Address, receipt *types.Receipt
 	}
 }
 
-func (p *ParentTransactionReceipt) GetMessageEvents() ([]*rollupgen.BridgeMessageDelivered, []*rollupgen.InboxInboxMessageDelivered, error) {
+func (p *ParentTransactionReceipt) GetParentToChildMessages() error {
+	// messageDeliveredEvents, inboxMessageDeliveredEvents, err := p.GetMessageEvents()
+	// if err != nil {
+	// 	return nil
+	// }
+	return nil
+}
+
+func (p *ParentTransactionReceipt) GetMessageEvents() ([]*MessageEvent, error) {
 	messageDeliveredEvents, err := p.getMessageDeliveredEvents()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	inboxMessageDeliveredEvents, err := p.getInboxMessageDeliveredEvents()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	if len(messageDeliveredEvents) != len(inboxMessageDeliveredEvents) {
-		return nil, nil, errors.New("ArbSDK: missing event for message index")
+		return nil, errors.New("ArbSDK: missing event count")
 	}
-	return messageDeliveredEvents, inboxMessageDeliveredEvents, err
+	var messageEvents []*MessageEvent
+	for _, bridgeMessage := range messageDeliveredEvents {
+		for _, inboxMessage := range inboxMessageDeliveredEvents {
+			if inboxMessage.MessageNum == bridgeMessage.MessageIndex {
+				messageEvents = append(messageEvents, &MessageEvent{
+					bridgeMessageDelivered: bridgeMessage,
+					inboxMessageDelivered:  inboxMessage,
+				})
+				break
+			}
+		}
+	}
+	if len(messageEvents) != len(messageDeliveredEvents) {
+		return nil, errors.New("ArbSDK: missing event for message index")
+	}
+	return messageEvents, nil
 
 }
 
