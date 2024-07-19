@@ -24,7 +24,7 @@ Bridge setup is handled through `BridgeDeployer`. The deployer accepts a setp of
 
 ### Cross-Chain Messages
 
-L1 -> L2 corss chain messages is handled by `ParentToChildMessage`, `ArbitrumSubmitRetryableTx` and `ParentTransactionReceipt`. Those structs parse logs from inbox and bridge contracts, get all necessary data for calculating retryable id, which can be used for querying redeem status on child chains.
+L1 -> L2 corss chain messaging is handled by `ParentToChildMessage`, `ArbitrumSubmitRetryableTx` and `ParentTransactionReceipt`. Those structs parse logs from inbox and bridge contracts, get all necessary data for calculating retryable id, which can be used for querying redeem status on child chains.
 
 
 ## Usage
