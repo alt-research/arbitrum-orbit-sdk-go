@@ -14,15 +14,15 @@ go get github.com/renlulu/arbitrum-orbit-sdk-go
 
 ## Key Features
 
-## Rollup Creation/Nitro Contract Deployment
+### Rollup Creation/Nitro Contract Deployment
 
 Rollup creation or nitro contract deployment is handled through `RollupCreator`. The creator accepts a set of parameters as rollup config, call `CreateRollup` on `RollupCreator` factory contract, parse rollup contracts' address from receipt logs.
 
-## Token Bridge Setup
+### Token Bridge Setup
 
 Bridge setup is handled through `BridgeDeployer`. The deployer accepts a setp of parameters including rollup address created by `RollupCreator`, simulate and estimate necessary transactions would be happening both on parent chain and child chain, then call `CreateTokenBridge` on `TokenBridgeFactory` contract. 
 
-## Cross-Chain Messages
+### Cross-Chain Messages
 
 L1 -> L2 corss chain messages is handled by `ParentToChildMessage`, `ArbitrumSubmitRetryableTx` and `ParentTransactionReceipt`. Those structs parse logs from inbox and bridge contracts, get all necessary data for calculating retryable id, which can be used for querying redeem status on chain chains.
 
