@@ -10,6 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
+	sdktypes "github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
 
 var (
@@ -78,23 +80,46 @@ func NewParentTransactionReceipt(to, from common.Address, receipt *types.Receipt
 	}
 }
 
-func (p *ParentTransactionReceipt) GetParentToChildMessages(inbox string) error {
+func (p *ParentTransactionReceipt) GetParentToChildMessages(
+	chainId *big.Int,
+	l1Value *big.Int,
+	parentBaseFee *big.Int,
+	inbox string,
+) ([]*ParentToChildMessage, error) {
 	messageEvents, err := p.GetMessageEvents()
 	if err != nil {
-		return err
+		return nil, err
 	}
+	var parentToChildMessages []*ParentToChildMessage
 	for _, me := range messageEvents {
-		fmt.Println("message index: ", me.BridgeMessageDelivered.MessageIndex)
 		readInbox := me.BridgeMessageDelivered.Inbox.Hex()
 		if me.BridgeMessageDelivered.Kind == L1MessageType_submitRetryableTx && strings.EqualFold(readInbox, inbox) {
+			fmt.Println("aaa")
 			messageData, err := DecodeMessageData(me.InboxMessageDelivered.Data)
 			if err != nil {
-				return nil
+				return nil, err
 			}
-			fmt.Println("message data: ", messageData)
+			retryableMessageParams := sdktypes.RetryableMessageParams{
+				DestAddress: utils.BigIntToAdddress(messageData.Dest),
+				L2CallValue: messageData.L2CallValue,
+				// todo
+				L1Value:                l1Value,
+				MaxSubmissionFee:       messageData.MaxSubmissionCost,
+				ExcessFeeRefundAddress: utils.BigIntToAdddress(messageData.ExcessFeeRefundAddress),
+				CallValueRefundAddress: utils.BigIntToAdddress(messageData.CallValueRefundAddress),
+				GasLimit:               messageData.GasLimit,
+				MaxFeePerGas:           messageData.MaxFeePerGas,
+				// todo
+				// Data: messageData.Data,
+			}
+			parentToChaildMessage, err := NewParentToChildMessage(chainId, p.From, *me.InboxMessageDelivered.MessageNum, parentBaseFee, retryableMessageParams)
+			if err != nil {
+				return nil, err
+			}
+			parentToChildMessages = append(parentToChildMessages, parentToChaildMessage)
 		}
 	}
-	return nil
+	return parentToChildMessages, nil
 }
 
 func (p *ParentTransactionReceipt) GetMessageEvents() ([]*MessageEvent, error) {

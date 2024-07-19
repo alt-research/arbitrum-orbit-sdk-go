@@ -1,19 +1,23 @@
 package message
 
 import (
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/big"
 
+	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 	"github.com/umbracle/ethgo/abi"
 )
 
 var (
-	typ = abi.MustNewType("tuple(uint256 dest,uint256 l2callvalue,uint256 submissioncost,uint256 excess,uint256 callvaluerefund,uint256 gaslimit,uint256 maxfeebid,uint256 datalength)")
+	typ = abi.MustNewType("tuple(uint256 dest,uint256 l2callvalue,uint256 l1callvalue, uint256 submissioncost,uint256 excess,uint256 callvaluerefund,uint256 gaslimit,uint256 maxfeebid,uint256 datalength)")
 )
 
 type MessageData struct {
 	Dest                   *big.Int `abi:"dest"`
 	L2CallValue            *big.Int `abi:"l2callvalue"`
+	L1CallValue            *big.Int `abi:"l1callvalue"`
 	MaxSubmissionCost      *big.Int `abi:"submissioncost"`
 	ExcessFeeRefundAddress *big.Int `abi:"excess"`
 	CallValueRefundAddress *big.Int `abi:"callvaluerefund"`
@@ -25,6 +29,7 @@ type MessageData struct {
 func DecodeMessageData(encoded []byte) (*MessageData, error) {
 	md, err := typ.Decode(encoded)
 	if err != nil {
+		fmt.Println("eerr")
 		return nil, err
 	}
 
@@ -32,6 +37,16 @@ func DecodeMessageData(encoded []byte) (*MessageData, error) {
 	if !ok {
 		return nil, errors.New("ArbSDK: cannot decode")
 	}
+
+	calldataLength := decoded["datalength"].(*big.Int)
+	eventDataLength := len(encoded)
+	fmt.Println("call data length: ", calldataLength)
+	fmt.Println("event data length: ", eventDataLength)
+	fmt.Println("des ", utils.BigIntToAdddress(decoded["dest"].(*big.Int)))
+
+	start := eventDataLength - int(calldataLength.Int64())
+	data := encoded[start:]
+	fmt.Println(hex.EncodeToString(data))
 
 	return &MessageData{
 		Dest:                   decoded["dest"].(*big.Int),
@@ -41,6 +56,7 @@ func DecodeMessageData(encoded []byte) (*MessageData, error) {
 		CallValueRefundAddress: decoded["callvaluerefund"].(*big.Int),
 		GasLimit:               decoded["gaslimit"].(*big.Int),
 		MaxFeePerGas:           decoded["maxfeebid"].(*big.Int),
-		DataLength:             decoded["datalength"].(*big.Int),
+		// DataLength:             decoded["datalength"].(*big.Int),
+		// Data: decoded["data"].([]byte),
 	}, nil
 }

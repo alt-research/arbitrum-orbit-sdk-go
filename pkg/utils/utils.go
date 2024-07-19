@@ -50,3 +50,7 @@ func AddressToBigInt(addr common.Address) *big.Int {
 	ret.SetBytes(addr.Bytes())
 	return ret
 }
+
+func BigIntToAdddress(addr *big.Int) common.Address {
+	return common.BigToAddress(addr)
+}
