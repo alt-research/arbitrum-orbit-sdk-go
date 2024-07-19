@@ -75,6 +75,10 @@ func NewArbitrumSubmitRetryableTx(
 	parentBaseFee *big.Int,
 	messageData types.RetryableMessageParams,
 ) *ArbitrumSubmitRetryableTx {
+	retryTo := &messageData.DestAddress
+	if retryTo.Hex() == "0x0000000000000000000000000000000000000000" {
+		retryTo = nil
+	}
 	return &ArbitrumSubmitRetryableTx{
 		ChainId:          chainId,
 		RequestId:        common.BytesToHash(math.U256Bytes(&messageNumber)),
@@ -83,7 +87,7 @@ func NewArbitrumSubmitRetryableTx(
 		DepositValue:     messageData.L1Value,
 		GasFeeCap:        messageData.MaxFeePerGas,
 		Gas:              messageData.GasLimit.Uint64(),
-		RetryTo:          &messageData.DestAddress,
+		RetryTo:          retryTo,
 		RetryValue:       messageData.L2CallValue,
 		Beneficiary:      messageData.CallValueRefundAddress,
 		MaxSubmissionFee: messageData.MaxSubmissionFee,

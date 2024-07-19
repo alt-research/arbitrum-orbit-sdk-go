@@ -30,7 +30,6 @@ func hepler() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("txn: ", txn)
 	receipt, err := bind.WaitMined(context.Background(), baseChainClient, txn)
 	if err != nil {
 		return err
