@@ -2,7 +2,6 @@ package message
 
 import (
 	"errors"
-	"fmt"
 	"math/big"
 	"strings"
 
@@ -82,7 +81,6 @@ func NewParentTransactionReceipt(to, from common.Address, receipt *types.Receipt
 
 func (p *ParentTransactionReceipt) GetParentToChildMessages(
 	chainId *big.Int,
-	l1Value *big.Int,
 	parentBaseFee *big.Int,
 	inbox string,
 ) ([]*ParentToChildMessage, error) {
@@ -94,25 +92,22 @@ func (p *ParentTransactionReceipt) GetParentToChildMessages(
 	for _, me := range messageEvents {
 		readInbox := me.BridgeMessageDelivered.Inbox.Hex()
 		if me.BridgeMessageDelivered.Kind == L1MessageType_submitRetryableTx && strings.EqualFold(readInbox, inbox) {
-			fmt.Println("aaa")
 			messageData, err := DecodeMessageData(me.InboxMessageDelivered.Data)
 			if err != nil {
 				return nil, err
 			}
 			retryableMessageParams := sdktypes.RetryableMessageParams{
-				DestAddress: utils.BigIntToAdddress(messageData.Dest),
-				L2CallValue: messageData.L2CallValue,
-				// todo
-				L1Value:                l1Value,
+				DestAddress:            utils.BigIntToAdddress(messageData.Dest),
+				L2CallValue:            messageData.L2CallValue,
+				L1Value:                messageData.L1CallValue,
 				MaxSubmissionFee:       messageData.MaxSubmissionCost,
 				ExcessFeeRefundAddress: utils.BigIntToAdddress(messageData.ExcessFeeRefundAddress),
 				CallValueRefundAddress: utils.BigIntToAdddress(messageData.CallValueRefundAddress),
 				GasLimit:               messageData.GasLimit,
 				MaxFeePerGas:           messageData.MaxFeePerGas,
-				// todo
-				// Data: messageData.Data,
+				Data:                   messageData.Data,
 			}
-			parentToChaildMessage, err := NewParentToChildMessage(chainId, p.From, *me.InboxMessageDelivered.MessageNum, parentBaseFee, retryableMessageParams)
+			parentToChaildMessage, err := NewParentToChildMessage(chainId, me.BridgeMessageDelivered.Sender, *me.InboxMessageDelivered.MessageNum, parentBaseFee, retryableMessageParams)
 			if err != nil {
 				return nil, err
 			}

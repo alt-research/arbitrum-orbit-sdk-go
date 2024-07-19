@@ -26,7 +26,7 @@ func hepler() error {
 		return err
 	}
 
-	txn, _, err := baseChainClient.TransactionByHash(context.Background(), common.HexToHash("0xe2da6b5225e7194d6bcd782e1c3ebe016117e9d5e91fe282c7ad5a2393379e08"))
+	txn, _, err := baseChainClient.TransactionByHash(context.Background(), common.HexToHash("0xfa0cba9792ab55a3913413dde1b4f29461eb81362719b0a069593a3689b819b6"))
 	if err != nil {
 		return err
 	}
@@ -36,10 +36,12 @@ func hepler() error {
 		return err
 	}
 	fmt.Println("receipt: ", receipt.Logs)
-	parentChainReceipt := NewParentTransactionReceipt(common.HexToAddress("0x66530799037b46913e52e9e0144d15ab6ed954f5"), common.HexToAddress("0x56c486d3786fa26cc61473c499a36eb9cc1fbd8e"), receipt)
+	from := common.HexToAddress("0x66530799037b46913e52e9e0144d15ab6ed954f5")
+	to := common.HexToAddress("0x56c486d3786fa26cc61473c499a36eb9cc1fbd8e")
+	parentChainReceipt := NewParentTransactionReceipt(to, from, receipt)
 	l1BaseFee := big.NewInt(100000000)
-	inbox := "0x43696c385947Dc1f1F36b8D3C65589D2D70607C6"
-	parentToChildMessages, err := parentChainReceipt.GetParentToChildMessages(big.NewInt(421614), txn.Value(), l1BaseFee, inbox)
+	inbox := "0xB9892e41ca8Ead0a9968d4dA5c1d08A833a07a36"
+	parentToChildMessages, err := parentChainReceipt.GetParentToChildMessages(big.NewInt(20240328), l1BaseFee, inbox)
 	if err != nil {
 		return err
 	}

@@ -1,12 +1,9 @@
 package message
 
 import (
-	"encoding/hex"
 	"errors"
-	"fmt"
 	"math/big"
 
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 	"github.com/umbracle/ethgo/abi"
 )
 
@@ -14,7 +11,7 @@ var (
 	typ = abi.MustNewType("tuple(uint256 dest,uint256 l2callvalue,uint256 l1callvalue, uint256 submissioncost,uint256 excess,uint256 callvaluerefund,uint256 gaslimit,uint256 maxfeebid,uint256 datalength)")
 )
 
-type MessageData struct {
+type MessageDataParam struct {
 	Dest                   *big.Int `abi:"dest"`
 	L2CallValue            *big.Int `abi:"l2callvalue"`
 	L1CallValue            *big.Int `abi:"l1callvalue"`
@@ -26,10 +23,22 @@ type MessageData struct {
 	DataLength             *big.Int `abi:"datalength"`
 }
 
+type MessageData struct {
+	Dest                   *big.Int
+	L2CallValue            *big.Int
+	L1CallValue            *big.Int
+	MaxSubmissionCost      *big.Int
+	ExcessFeeRefundAddress *big.Int
+	CallValueRefundAddress *big.Int
+	GasLimit               *big.Int
+	MaxFeePerGas           *big.Int
+	DataLength             *big.Int
+	Data                   []byte
+}
+
 func DecodeMessageData(encoded []byte) (*MessageData, error) {
 	md, err := typ.Decode(encoded)
 	if err != nil {
-		fmt.Println("eerr")
 		return nil, err
 	}
 
@@ -40,23 +49,19 @@ func DecodeMessageData(encoded []byte) (*MessageData, error) {
 
 	calldataLength := decoded["datalength"].(*big.Int)
 	eventDataLength := len(encoded)
-	fmt.Println("call data length: ", calldataLength)
-	fmt.Println("event data length: ", eventDataLength)
-	fmt.Println("des ", utils.BigIntToAdddress(decoded["dest"].(*big.Int)))
-
 	start := eventDataLength - int(calldataLength.Int64())
 	data := encoded[start:]
-	fmt.Println(hex.EncodeToString(data))
 
 	return &MessageData{
 		Dest:                   decoded["dest"].(*big.Int),
 		L2CallValue:            decoded["l2callvalue"].(*big.Int),
+		L1CallValue:            decoded["l1callvalue"].(*big.Int),
 		MaxSubmissionCost:      decoded["submissioncost"].(*big.Int),
 		ExcessFeeRefundAddress: decoded["excess"].(*big.Int),
 		CallValueRefundAddress: decoded["callvaluerefund"].(*big.Int),
 		GasLimit:               decoded["gaslimit"].(*big.Int),
 		MaxFeePerGas:           decoded["maxfeebid"].(*big.Int),
-		// DataLength:             decoded["datalength"].(*big.Int),
-		// Data: decoded["data"].([]byte),
+		DataLength:             decoded["datalength"].(*big.Int),
+		Data:                   data,
 	}, nil
 }
