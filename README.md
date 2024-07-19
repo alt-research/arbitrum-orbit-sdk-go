@@ -29,11 +29,15 @@ L1 -> L2 corss chain messaging is handled by `ParentToChildMessage`, `ArbitrumSu
 
 ## Usage
 
+> [!IMPORTANT]
+>
+> All exmaple code below is only for demo purpose.
+>
+
 Here's a basic example of using the SDK create rollup:
 
 ```go
 func main() {
-	fmt.Println("start creating rollup")
 	privateKey := os.Getenv("PRIVATE_KEY")
 	owner := os.Getenv("OWNER")
 	l1conn := os.Getenv("L1CONN")
@@ -79,7 +83,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(txn.Hash().String())
 	rollupContracts, err := rollupCreator.ParseRollupContracts(context.Background(), 6, txn)
 	if err != nil {
 		fmt.Printf("parse rollup contracts failed: %s\n", err.Error())
@@ -112,7 +115,7 @@ func main() {
 	bridgeDeployer, err := NewBridgeDeployer(privatekey, baseChainRpc, chainChainRpc, rollupAddress, nativeToken)
 	if err != nil {
 		fmt.Println(err.Error())
-		t.Fail()
+		os.Exit(1)
 	}
 	txn, err := bridgeDeployer.CreateNewTokenBridge(
 		context.Background(),
@@ -123,12 +126,12 @@ func main() {
 	)
 	if err != nil {
 		fmt.Println(err.Error())
-		t.Fail()
+		os.Exit(1)
 	}
 	receipt, err := bind.WaitMined(context.Background(), bridgeDeployer.BaseChainClient, txn)
 	if err != nil {
 		fmt.Println(err.Error())
-		t.Fail()
+		os.Exit(1)
 	}
 	fmt.Println(receipt.TxHash)
 }
@@ -137,7 +140,7 @@ func main() {
 Here's a basic example of using the SDK calculate retryable id:
 
 ```go
-func hepler() error {
+func main() {
 	baseChainRpc := ""
 	transactionHash := ""
 	from := common.HexToAddress("")
@@ -146,26 +149,29 @@ func hepler() error {
 	l1BaseFee := big.NewInt(100000000)
 	baseChainClient, err := ethclient.Dial(baseChainRpc)
 	if err != nil {
-		return err
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	txn, _, err := baseChainClient.TransactionByHash(context.Background(), common.HexToHash(transactionHash))
 	if err != nil {
-		return err
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 	receipt, err := bind.WaitMined(context.Background(), baseChainClient, txn)
 	if err != nil {
-		return err
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	parentChainReceipt := NewParentTransactionReceipt(to, from, receipt)
 	parentToChildMessages, err := parentChainReceipt.GetParentToChildMessages(big.NewInt(20240328), l1BaseFee, inbox)
 	if err != nil {
-		return err
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 	for _, parentToChildMessage := range parentToChildMessages {
 		fmt.Println(hex.EncodeToString(parentToChildMessage.RetryableCreationId))
 	}
-	return nil
 }
 ```
