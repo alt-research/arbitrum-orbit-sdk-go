@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/renlulu/arbitrum-orbit-sdk-go/cmd/arbctl/commands"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/cmd/arbctl/commands"
 	"github.com/urfave/cli"
 )
 

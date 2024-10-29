@@ -5,12 +5,12 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
+	sdktypes "github.com/alt-research/arbitrum-orbit-sdk-go/pkg/types"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
-	sdktypes "github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
 
 var (

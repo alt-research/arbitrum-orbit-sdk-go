@@ -9,7 +9,7 @@ Arbitrum Orbit SDK simplifies the process of deploying nitro contracts, bridge s
 ## Installation
 
 ```bash
-go get github.com/renlulu/arbitrum-orbit-sdk-go
+go get github.com/alt-research/arbitrum-orbit-sdk-go
 ```
 
 ## Key Features
@@ -20,7 +20,7 @@ Rollup creation or nitro contract deployment is handled through `RollupCreator`.
 
 ### Token Bridge Setup
 
-Bridge setup is handled through `BridgeDeployer`. The deployer accepts a setp of parameters including rollup address created by `RollupCreator`, simulate and estimate necessary transactions would be happening both on parent chain and child chain, then call `CreateTokenBridge` on `TokenBridgeFactory` contract. 
+Bridge setup is handled through `BridgeDeployer`. The deployer accepts a setp of parameters including rollup address created by `RollupCreator`, simulate and estimate necessary transactions would be happening both on parent chain and child chain, then call `CreateTokenBridge` on `TokenBridgeFactory` contract.
 
 ### Cross-Chain Messages
 

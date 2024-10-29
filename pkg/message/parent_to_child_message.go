@@ -5,11 +5,11 @@ import (
 	"encoding/hex"
 	"math/big"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
 )
 
 type ParentToChildMessage struct {

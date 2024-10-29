@@ -1,6 +1,6 @@
 package rollup
 
-import "github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
+import "github.com/alt-research/arbitrum-orbit-sdk-go/pkg/types"
 
 func GenerateL2Config(chainId int64, initialChainOwner string, enableAnyTrust bool) *types.L2Config {
 	return &types.L2Config{

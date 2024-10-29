@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/rollup"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/rollup"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
 )
 
 func main() {

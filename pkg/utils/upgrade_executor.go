@@ -5,13 +5,13 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings/sequencerinboxgen"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/sequencerinboxgen"
 )
 
 func GenerateWhitelistDAKeySetCalldata(sequencerInbox common.Address, keyset []byte) ([]byte, error) {

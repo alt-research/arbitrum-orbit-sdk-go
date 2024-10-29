@@ -8,9 +8,9 @@ import (
 	"math/big"
 	"os"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
 
 func main() {

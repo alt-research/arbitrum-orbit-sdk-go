@@ -8,8 +8,8 @@ import (
 	"math/big"
 	"os"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/rollup"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/rollup"
 )
 
 func main() {

@@ -4,8 +4,8 @@ import (
 	"encoding/hex"
 	"math/big"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/rollupgen"
 )
 
 var (

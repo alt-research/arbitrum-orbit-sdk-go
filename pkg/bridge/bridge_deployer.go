@@ -5,16 +5,16 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bindings/bridgegen"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/message"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/types"
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/utils"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/bindings/bridgegen"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/message"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/types"
-	"github.com/renlulu/arbitrum-orbit-sdk-go/pkg/utils"
 )
 
 // 0.02 ether
