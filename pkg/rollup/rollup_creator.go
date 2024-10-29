@@ -87,7 +87,7 @@ func (r *RollupCreator) CreateRollup(
 		return nil, err
 	}
 	r.opts.Nonce = big.NewInt(int64(nonce))
-	r.opts.GasPrice = suggestedGasPrice
+	r.opts.GasPrice = new(big.Int).Mul(suggestedGasPrice, big.NewInt(2))
 	r.opts.Value = value
 	r.opts.GasLimit = gasLimit
 
