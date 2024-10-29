@@ -82,7 +82,12 @@ func (r *RollupCreator) CreateRollup(
 	if err != nil {
 		return nil, err
 	}
+	suggestedGasPrice, err := r.Client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	r.opts.Nonce = big.NewInt(int64(nonce))
+	r.opts.GasPrice = suggestedGasPrice
 	r.opts.Value = value
 	r.opts.GasLimit = gasLimit
 
