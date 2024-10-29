@@ -1,4 +1,4 @@
-module github.com/renlulu/arbitrum-orbit-sdk-go
+module github.com/alt-research/arbitrum-orbit-sdk-go
 
 go 1.22.2
 
