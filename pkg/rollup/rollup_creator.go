@@ -67,7 +67,12 @@ func (r *RollupCreator) CreateRollup(
 	deploymentParams.Config = config
 	deploymentParams.BatchPoster = batchPoster
 	deploymentParams.Validators = validators
-	deploymentParams.MaxDataSize = types.DefaultRollupCreatorRollupDeploymentParams.MaxDataSize
+	if parentChainId == 1 || parentChainId == 11155111 {
+		deploymentParams.MaxDataSize = types.DefaultL2MaxDataSize
+	}
+	if parentChainId == 421614 {
+		deploymentParams.MaxDataSize = types.DefaultL3MaxDataSize
+	}
 	deploymentParams.NativeToken = types.DefaultRollupCreatorRollupDeploymentParams.NativeToken
 	deploymentParams.DeployFactoriesToL2 = true
 	deploymentParams.MaxFeePerGasForRetryables = types.DefaultRollupCreatorRollupDeploymentParams.MaxFeePerGasForRetryables
