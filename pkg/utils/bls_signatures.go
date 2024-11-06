@@ -9,8 +9,8 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/alt-research/arbitrum-orbit-sdk-go/pkg/bls12381"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/bls12381"
 )
 
 type PublicKey struct {
