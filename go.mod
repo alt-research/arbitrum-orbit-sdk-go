@@ -1,10 +1,11 @@
 module github.com/alt-research/arbitrum-orbit-sdk-go
 
-go 1.22.2
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
-	github.com/ethereum/go-ethereum v1.14.11
+	github.com/ethereum/go-ethereum v1.14.13
 	github.com/urfave/cli v1.22.15
 )
 
@@ -31,7 +32,6 @@ require (
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
